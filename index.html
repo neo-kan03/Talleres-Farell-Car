@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Órdenes de reparación · Talleres Farell Car</title>
+<style>
+:root{
+  --bg:#f3f1ec; --card:#ffffff; --ink:#1c1d1f; --muted:#6b6d72; --line:#e4e1da;
+  --brand:#c2410c; --brand-ink:#ffffff; --brand-soft:#fdeee5;
+  --ok:#15803d; --ok-soft:#e7f5ec; --warn:#b45309; --warn-soft:#fdf3e1;
+  --info:#1d4ed8; --info-soft:#e6edfc; --photo:#2a2c30;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141516; --card:#1e2022; --ink:#ececec; --muted:#a0a3a8; --line:#2f3235;
+    --brand:#f07a3c; --brand-ink:#1a0f08; --brand-soft:#3a2216;
+    --ok:#4ade80; --ok-soft:#183324; --warn:#fbbf24; --warn-soft:#3a2e12;
+    --info:#93b4ff; --info-soft:#1b2540; --photo:#0d0e0f;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+.demo{background:var(--ink);color:var(--bg);font-size:12px;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:30}
+.seg{display:flex;background:rgba(127,127,127,.25);border-radius:99px;padding:3px}
+.seg button{border:0;background:none;color:inherit;padding:5px 12px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--bg);color:var(--ink)}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 110px}
+.wrap.narrow{max-width:480px}
+header{padding:20px 0 10px;display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:10px;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
+.shop{font-weight:700;font-size:17px;line-height:1.2}
+.shop small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0}
+h1{font-size:22px;line-height:1.25;margin:4px 0 6px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 12px;font-weight:600}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+.plate{font-family:ui-monospace,Menlo,Consolas,monospace;border:1.5px solid var(--ink);border-radius:5px;padding:1px 7px;font-weight:700;white-space:nowrap;font-size:14px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--warn-soft);color:var(--warn);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.info{background:var(--info-soft);color:var(--info)}
+.pill.brand{background:var(--brand-soft);color:var(--brand)}
+.pill.grey{background:var(--bg);color:var(--muted)}
+.btn{border-radius:12px;padding:12px 14px;font-weight:700;font-size:15px;cursor:pointer;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.btn.main{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.btn.small{padding:7px 11px;font-size:13px;border-radius:9px}
+.btn:disabled{opacity:.45;cursor:default}
+.back{border:0;background:none;color:var(--brand);font-weight:600;padding:16px 0 4px;cursor:pointer}
+
+/* tablero */
+.counts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:4px 0}
+.count{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center}
+.count b{display:block;font-size:20px}
+.count span{font-size:11px;color:var(--muted);line-height:1.2;display:block}
+.row{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin:8px 0;cursor:pointer;width:100%;text-align:left}
+.row .info{flex:1;min-width:0}
+.row .info b{display:block;font-size:15px}
+.row .info small{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .info small.ok{color:var(--ok);font-weight:600}
+.row.flash{animation:flash 1.8s ease}
+@keyframes flash{0%,50%{box-shadow:0 0 0 3px var(--ok)}100%{box-shadow:none}}
+
+/* formularios del taller */
+label.f{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;font-weight:600}
+input[type=text],input[type=number],select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-size:15px}
+textarea{resize:vertical;min-height:60px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.addbox{border:1.5px dashed var(--line);border-radius:12px;padding:12px;margin-top:12px}
+.addbox > b{font-size:14px}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.thumb{width:64px;height:48px;border-radius:8px;overflow:hidden;background:var(--photo);flex:none;border:0;padding:0}
+.thumb img,.thumb svg{width:100%;height:100%;object-fit:cover;display:block}
+.line{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.line:first-child{border-top:0;padding-top:0}
+.line .txt{flex:1;min-width:0}
+.line .txt b{display:block;font-size:15px}
+.line .txt small{display:block;color:var(--muted);font-size:13px}
+.line.off .txt b,.line.off .price{color:var(--muted);text-decoration:line-through}
+.x{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:2px 4px}
+.actions{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:5}
+.actions .in{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.actions .in .btn{flex:1}
+.record{border-color:var(--ok)}
+.record h2{color:var(--ok)}
+.record dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.record dt{color:var(--muted)}
+.record dd{margin:0;font-weight:600}
+
+/* cliente */
+.car{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:14px}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{position:relative;padding:0 0 14px 28px;font-size:15px}
+.steps li:last-child{padding-bottom:0}
+.steps li::before{content:"";position:absolute;left:5px;top:5px;width:12px;height:12px;border-radius:50%;border:2px solid var(--line);background:var(--card)}
+.steps li::after{content:"";position:absolute;left:11px;top:20px;bottom:-2px;width:2px;background:var(--line)}
+.steps li:last-child::after{display:none}
+.steps li.done::before{background:var(--ok);border-color:var(--ok)}
+.steps li.now::before{background:var(--brand);border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
+.steps li.now{font-weight:600}
+.steps small{display:block;color:var(--muted);font-weight:400;font-size:13px}
+.said{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:14px}
+.said b{display:block;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.finding{padding:12px 0;border-top:1px solid var(--line)}
+.finding:first-of-type{border-top:0;padding-top:0}
+.finding h3{font-size:16px;margin:0 0 4px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.finding p{font-size:14px;color:var(--muted);margin:0 0 10px}
+.photos{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px}
+.photo{flex:0 0 78%;scroll-snap-align:start;border-radius:12px;overflow:hidden;background:var(--photo);position:relative;aspect-ratio:4/3;border:0;padding:0;cursor:zoom-in}
+.photo svg,.photo img{width:100%;height:100%;display:block;object-fit:cover}
+.photo span{position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:3px 8px;border-radius:6px}
+.item{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0;padding-top:0}
+.item .txt{flex:1;min-width:0}
+.item .txt b{display:block;font-size:15px}
+.item .txt small{color:var(--muted);font-size:13px;display:block}
+.tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.tag.need{color:var(--brand)} .tag.opt{color:var(--muted)}
+.price{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.item.off .price{text-decoration:line-through;color:var(--muted)}
+.item.off .txt b{color:var(--muted)}
+.sw{position:relative;width:46px;height:28px;flex:none;margin-top:2px}
+.sw input{opacity:0;width:100%;height:100%;margin:0;position:absolute;cursor:pointer;z-index:1}
+.sw i{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:.2s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:.2s}
+.sw input:checked + i{background:var(--ok)}
+.sw input:checked + i::after{transform:translateX(18px)}
+.sw input:focus-visible + i{outline:2px solid var(--brand);outline-offset:2px}
+.totals{margin-top:6px;padding-top:12px;border-top:2px solid var(--ink);font-size:14px}
+.totals div{display:flex;justify-content:space-between;padding:2px 0}
+.totals .big{font-size:20px;font-weight:800;padding-top:6px}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:16px 0;margin:0}
+
+/* hojas */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:40}
+.sheet-bg.show{display:flex}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+.sheet h3{margin:0 0 8px;font-size:19px}
+.sheet ul{padding-left:18px;margin:8px 0 14px;font-size:14px}
+.sheet .r{display:flex;gap:10px;margin-top:14px}
+.sheet .r .btn{flex:1}
+.bubble{background:var(--ok-soft);border-radius:14px 14px 14px 4px;padding:10px 12px;font-size:14px;margin:10px 0}
+.bubble a{color:var(--info);word-break:break-all}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.lightbox.show{display:flex}
+.lightbox .box{width:100%;max-width:640px;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--photo)}
+.lightbox .box svg,.lightbox .box img{width:100%;height:100%;object-fit:contain;display:block}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;display:none;max-width:calc(100% - 32px);text-align:center}
+.toast.show{display:block}
+footer{text-align:center;font-size:12px;color:var(--muted);margin-top:24px}
+</style>
+</head>
+<body>
+<div class="demo"><span>DEMO · datos de ejemplo</span><span>Vista del taller</span></div>
+<main id="app"></main>
+<div class="sheet-bg" id="sheet"><div class="sheet" id="sheetBody" role="dialog" aria-modal="true"></div></div>
+<div class="lightbox" id="lightbox"><div class="box" id="lbBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- Datos de ejemplo ---------- */
+const STATES = {
+  recibido:    {label:"Recibido",             cls:"grey"},
+  diagnostico: {label:"Diagnosticado",        cls:"info"},
+  esperando:   {label:"Esperando aprobación", cls:"brand"},
+  reparacion:  {label:"En reparación",        cls:""},
+  listo:       {label:"Listo",                cls:"ok"}
+};
+const ORDER = ["recibido","diagnostico","esperando","reparacion","listo"];
+
+let cars = [
+  {id:"0000-DEMO", plate:"0000 DEM", model:"Coche de ejemplo A · Gasolina", client:"Cliente de ejemplo", status:"diagnostico",
+   said:"Hace ruido al frenar, sobre todo por la mañana.",
+   findings:[
+     {title:"Pastillas de freno delanteras", state:"mal", note:"Quedan unos 2 mm de material. Por debajo de 3 mm se recomienda cambiarlas. Es la causa del ruido.", photos:["pad","wheel"]},
+     {title:"Discos de freno", state:"ok", note:"Grosor dentro de lo admitido. No hace falta cambiarlos.", photos:[]},
+     {title:"Líquido de frenos", state:"rec", note:"La medición indica humedad en el líquido. No es urgente, pero conviene cambiarlo aprovechando la reparación.", photos:["tester"]}
+   ],
+   items:[
+     {name:"Cambio de pastillas delanteras", detail:"Recambio y mano de obra", price:95, need:true, on:true},
+     {name:"Cambio de líquido de frenos", detail:"Purgado del circuito", price:45, need:false, on:true}
+   ], approval:null, sentAt:null},
+  {id:"0001-DEMO", plate:"0001 DEM", model:"Coche de ejemplo B · Diésel", client:"Cliente de ejemplo 2", status:"recibido",
+   said:"Se enciende el testigo del motor de vez en cuando.", findings:[], items:[], approval:null, sentAt:null},
+  {id:"0002-DEMO", plate:"0002 DEM", model:"Coche de ejemplo C · Gasolina", client:"Cliente de ejemplo 3", status:"reparacion",
+   said:"Revisión antes de un viaje.",
+   findings:[{title:"Neumáticos traseros", state:"mal", note:"Dibujo por debajo del mínimo recomendado.", photos:[]}],
+   items:[{name:"Cambio de neumáticos traseros", detail:"Dos unidades, montaje y equilibrado", price:180, need:true, on:true}],
+   approval:{when:"16 de octubre de 2026, 18:12:40", yes:"Cambio de neumáticos traseros", no:"Ninguna", total:"217,80 €", via:"Por WhatsApp"}, sentAt:"16 oct, 17:50"},
+  {id:"0003-DEMO", plate:"0003 DEM", model:"Coche de ejemplo D · Híbrido", client:"Cliente de ejemplo 4", status:"listo",
+   said:"Cambio de aceite.",
+   findings:[{title:"Aceite y filtro", state:"rec", note:"Toca cambio por kilometraje.", photos:[]}],
+   items:[{name:"Cambio de aceite y filtro", detail:"", price:70, need:true, on:true}],
+   approval:{when:"15 de octubre de 2026, 10:03:11", yes:"Cambio de aceite y filtro", no:"Ninguna", total:"84,70 €", via:"En persona"}, sentAt:"15 oct, 9:41"}
+];
+
+let view = {screen:"board", carId:null};
+let flashId = null;
+
+/* ---------- Utilidades ---------- */
+const $ = s => document.querySelector(s);
+const eur = n => n.toLocaleString("es-ES",{style:"currency",currency:"EUR"});
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const car = id => cars.find(c => c.id === id);
+const totals = c => { const base = c.items.filter(i => i.on).reduce((s,i) => s + i.price, 0); const iva = Math.round(base*21)/100; return {base, iva, total: base + iva}; };
+const pill = st => `<span class="pill ${STATES[st].cls}">${STATES[st].label}</span>`;
+const findingPill = s => s === "ok" ? `<span class="pill ok">Correcto</span>` : s === "rec" ? `<span class="pill">Recomendable</span>` : `<span class="pill brand">A cambiar</span>`;
+function toast(t){ const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2600); }
+
+/* Dibujos en lugar de fotos reales */
+const ART = {
+  pad: `<svg viewBox="0 0 400 300"><rect width="400" height="300" fill="#2a2c30"/>
+    <text x="200" y="34" fill="#d9dade" font-size="15" text-anchor="middle" font-family="sans-serif">Pastilla nueva vs. pastilla actual</text>
+    <g font-family="sans-serif" font-size="13" fill="#d9dade" text-anchor="middle">
+      <rect x="50" y="80" width="130" height="24" rx="3" fill="#6b6f76"/><rect x="50" y="104" width="130" height="80" rx="4" fill="#a37b55"/>
+      <text x="115" y="215">Nueva · 12 mm</text>
+      <rect x="220" y="80" width="130" height="24" rx="3" fill="#6b6f76"/><rect x="220" y="104" width="130" height="14" rx="3" fill="#a37b55"/>
+      <text x="285" y="215" fill="#f59e6b">Actual · 2 mm</text></g></svg>`,
+  wheel: `<svg viewBox="0 0 400 300"><rect width="400" height="300" fill="#2a2c30"/>
+    <circle cx="200" cy="155" r="105" fill="#1a1b1e"/><circle cx="200" cy="155" r="78" fill="#55595f"/>
+    <circle cx="200" cy="155" r="70" fill="none" stroke="#7a7e85" stroke-width="3" stroke-dasharray="4 7"/>
+    <circle cx="200" cy="155" r="20" fill="#35383c"/><rect x="252" y="105" width="34" height="62" rx="6" fill="#c2410c"/>
+    <text x="200" y="285" fill="#d9dade" font-size="13" text-anchor="middle" font-family="sans-serif">Pinza y disco delantero izquierdo</text></svg>`,
+  tester: `<svg viewBox="0 0 400 300"><rect width="400" height="300" fill="#2a2c30"/>
+    <rect x="130" y="50" width="140" height="210" rx="18" fill="#d9dade"/><rect x="150" y="75" width="100" height="58" rx="6" fill="#1a1b1e"/>
+    <text x="200" y="113" fill="#fbbf24" font-size="26" text-anchor="middle" font-family="monospace">3 %</text>
+    <circle cx="170" cy="160" r="9" fill="#4ade80"/><circle cx="200" cy="160" r="9" fill="#fbbf24"/><circle cx="230" cy="160" r="9" fill="#55595f"/>
+    <text x="200" y="215" fill="#2a2c30" font-size="12" text-anchor="middle" font-family="sans-serif">Humedad del líquido</text></svg>`
+};
+const photoHTML = p => ART[p] || `<img src="${p}" alt="">`;
+function openPhoto(p){ $("#lbBox").innerHTML = photoHTML(p); $("#lightbox").classList.add("show"); }
+$("#lightbox").onclick = () => $("#lightbox").classList.remove("show");
+function sheet(html){ $("#sheetBody").innerHTML = html; $("#sheet").classList.add("show"); }
+function closeSheet(){ $("#sheet").classList.remove("show"); }
+$("#sheet").onclick = e => { if (e.target.id === "sheet") closeSheet(); };
+
+/* ---------- Navegación ---------- */
+function go(screen, carId){ view = {screen, carId: carId ?? view.carId}; render(); window.scrollTo(0,0); }
+function render(){ (view.screen === "detail" ? renderDetail : renderBoard)(); }
+
+/* ---------- WhatsApp ---------- */
+const STATE_TXT = {mal:"a cambiar", rec:"recomendable", ok:"correcto"};
+function budgetMsg(c){
+  const t = totals(c);
+  return `Hola, somos Talleres Farell Car. Ya hemos revisado tu coche (${c.plate}).\n\n` +
+    `*Lo que hemos encontrado*\n` + c.findings.map(f => `• ${f.title}: ${STATE_TXT[f.state]}.${f.note ? " " + f.note : ""}`).join("\n") +
+    `\n\n*Lo que proponemos*\n` + c.items.map(i => `• ${i.name} (${i.need ? "necesario" : "recomendado"}): ${eur(i.price)} + IVA`).join("\n") +
+    `\n\nTotal con IVA: ${eur(t.total)}\n\nDinos qué partidas quieres que hagamos. No tocamos nada sin tu OK.`;
+}
+const readyMsg = c => `Hola, somos Talleres Farell Car. Tu coche (${c.plate}) ya está listo para recoger. ¡Te esperamos!`;
+const waLink = txt => "https://wa.me/?text=" + encodeURIComponent(txt);
+function waSheet(title, sub, txt, onSent){
+  sheet(`<h3>${title}</h3><p class="muted" style="font-size:14px;margin:0">${sub}</p>
+    <div class="bubble" style="white-space:pre-line;max-height:46vh;overflow:auto">${esc(txt).replace(/\*(.+?)\*/g,"<b>$1</b>")}</div>
+    <div class="r"><button class="btn" id="cancel">Volver</button><a class="btn main" id="wa" href="${waLink(txt)}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none;background:#25D366;border-color:#25D366;color:#fff">Enviar por WhatsApp</a></div>`);
+  $("#cancel").onclick = closeSheet;
+  $("#wa").onclick = () => { setTimeout(() => { closeSheet(); onSent(); }, 150); };
+}
+
+/* ---------- Taller: tablero ---------- */
+function renderBoard(){
+  const rank = c => c.status === "esperando" ? -1 : ORDER.indexOf(c.status);
+  const list = [...cars].sort((a,b) => rank(a) - rank(b));
+  $("#app").innerHTML = `<div class="wrap">
+    <header><div class="logo">FC</div><div class="shop">Talleres Farell Car<small>Coches en el taller ahora</small></div></header>
+    <div class="counts">${ORDER.map(s => `<div class="count"><b>${cars.filter(c => c.status === s).length}</b><span>${STATES[s].label}</span></div>`).join("")}</div>
+    ${list.map(c => `<button class="row ${c.id === flashId ? "flash" : ""}" data-id="${c.id}">
+        <span class="plate">${esc(c.plate)}</span>
+        <span class="info"><b>${esc(c.client)}</b><small>${esc(c.said)}</small>
+          ${c.status === "listo" ? `<small class="ok">✓ Avisado por WhatsApp</small>` : c.approval ? `<small class="ok">✓ Aprobado · ${esc(c.approval.when.split(", ")[1].slice(0,5))}</small>` : c.sentAt ? `<small>Presupuesto enviado · ${esc(c.sentAt)}</small>` : ""}</span>
+        ${pill(c.status)}</button>`).join("")}
+    <footer>Talleres Farell Car · C. Antonio Abellán Abellán, 6 · Murcia</footer>
+  </div>`;
+  flashId = null;
+  document.querySelectorAll(".row").forEach(r => r.onclick = () => go("detail", r.dataset.id));
+}
+
+/* ---------- Taller: ficha del coche ---------- */
+function renderDetail(){
+  const c = car(view.carId);
+  const locked = !!c.approval;
+  const t = totals(c);
+  $("#app").innerHTML = `<div class="wrap">
+    <button class="back" id="back">‹ Todos los coches</button>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span class="plate">${esc(c.plate)}</span>${pill(c.status)}</div>
+      <h1 style="margin-top:10px">${esc(c.client)}</h1>
+      <p class="muted" style="margin:0">${esc(c.model)} · Orden ${esc(c.id)}</p>
+    </div>
+
+    ${c.approval ? `<div class="card record"><h2>✓ Aprobado por el cliente</h2><dl>
+      <dt>Cuándo</dt><dd>${esc(c.approval.when)}</dd>
+      <dt>Cómo</dt><dd>${esc(c.approval.via)}</dd>
+      <dt>Autoriza</dt><dd>${esc(c.approval.yes)}</dd>
+      <dt>Rechaza</dt><dd>${esc(c.approval.no)}</dd>
+      <dt>Total</dt><dd>${esc(c.approval.total)}</dd></dl></div>` : ""}
+
+    <div class="card">
+      <h2>Lo que cuenta el cliente</h2>
+      <textarea id="said" ${locked ? "disabled" : ""}>${esc(c.said)}</textarea>
+    </div>
+
+    <div class="card">
+      <h2>Lo que hemos encontrado</h2>
+      ${c.findings.length ? c.findings.map((f,i) => `<div class="line"><div class="txt">
+          <b>${esc(f.title)}</b>${f.note ? `<small>${esc(f.note)}</small>` : ""}
+          ${f.photos.length ? `<div class="thumbs">${f.photos.map((p,j) => `<button class="thumb" data-f="${i}" data-p="${j}">${photoHTML(p)}</button>`).join("")}</div>` : ""}
+        </div>${findingPill(f.state)}${locked ? "" : `<button class="x" data-delf="${i}" aria-label="Quitar">×</button>`}</div>`).join("")
+        : `<p class="empty">Aún no hay nada registrado.</p>`}
+      ${locked ? "" : `<div class="addbox"><b>Añadir lo que has visto</b>
+        <label class="f" for="fTitle">Pieza o sistema</label><input type="text" id="fTitle" placeholder="Ej.: Batería">
+        <label class="f" for="fNote">Explicación para el cliente</label><textarea id="fNote" placeholder="Qué le pasa, dicho de forma sencilla"></textarea>
+        <div class="grid2">
+          <div><label class="f" for="fState">Estado</label><select id="fState"><option value="mal">A cambiar</option><option value="rec">Recomendable</option><option value="ok">Correcto</option></select></div>
+          <div><label class="f" for="fPhoto">Fotos</label><input type="file" id="fPhoto" accept="image/*" capture="environment" multiple style="font-size:13px;width:100%"></div>
+        </div>
+        <div class="thumbs" id="fThumbs"></div>
+        <button class="btn small" id="addF" style="margin-top:10px">Añadir al diagnóstico</button>
+      </div>`}
+    </div>
+
+    <div class="card">
+      <h2>Lo que proponemos</h2>
+      ${c.items.length ? c.items.map((it,i) => `<div class="line ${locked && !it.on ? "off" : ""}"><div class="txt">
+          <span class="tag ${it.need ? "need" : "opt"}">${it.need ? "Necesario" : "Recomendado"}</span>
+          <b>${esc(it.name)}</b>${it.detail ? `<small>${esc(it.detail)}</small>` : ""}${locked && !it.on ? `<small>Rechazado por el cliente</small>` : ""}</div>
+          <span class="price">${eur(it.price)}</span>${locked ? "" : `<button class="x" data-deli="${i}" aria-label="Quitar">×</button>`}</div>`).join("")
+        : `<p class="empty">Sin partidas todavía.</p>`}
+      ${c.items.length ? `<div class="totals"><div class="big"><span>Total con IVA</span><span>${eur(t.total)}</span></div></div>` : ""}
+      ${locked ? "" : `<div class="addbox"><b>Añadir partida</b>
+        <label class="f" for="iName">Qué se hace</label><input type="text" id="iName" placeholder="Ej.: Cambio de batería">
+        <label class="f" for="iDetail">Detalle (opcional)</label><input type="text" id="iDetail" placeholder="Ej.: Recambio y mano de obra">
+        <div class="grid2">
+          <div><label class="f" for="iPrice">Precio sin IVA (€)</label><input type="number" id="iPrice" min="0" step="1" inputmode="decimal"></div>
+          <div><label class="f" for="iNeed">Tipo</label><select id="iNeed"><option value="1">Necesario</option><option value="0">Recomendado</option></select></div>
+        </div>
+        <button class="btn small" id="addI" style="margin-top:10px">Añadir partida</button>
+      </div>`}
+      <p class="note">Importes de ejemplo.</p>
+    </div>
+  </div>
+  <div class="actions"><div class="in">${detailAction(c)}</div></div>`;
+
+  $("#back").onclick = () => go("board");
+  document.querySelectorAll(".thumb[data-f]").forEach(b => b.onclick = () => openPhoto(c.findings[b.dataset.f].photos[b.dataset.p]));
+  bindAction(c);
+  if (locked) return;
+
+  $("#said").oninput = e => c.said = e.target.value;
+  let pending = [];
+  $("#fPhoto").onchange = e => {
+    [...e.target.files].forEach(file => {
+      const r = new FileReader();
+      r.onload = () => { pending.push(r.result); $("#fThumbs").innerHTML = pending.map(p => `<span class="thumb"><img src="${p}" alt=""></span>`).join(""); };
+      r.readAsDataURL(file);
+    });
+  };
+  $("#addF").onclick = () => {
+    const title = $("#fTitle").value.trim();
+    if (!title) return toast("Pon qué pieza o sistema has revisado");
+    c.findings.push({title, note: $("#fNote").value.trim(), state: $("#fState").value, photos: pending});
+    if (c.status === "recibido") c.status = "diagnostico";
+    renderDetail();
+  };
+  $("#addI").onclick = () => {
+    const name = $("#iName").value.trim(), price = parseFloat($("#iPrice").value);
+    if (!name || isNaN(price)) return toast("Pon qué se hace y el precio");
+    c.items.push({name, detail: $("#iDetail").value.trim(), price, need: $("#iNeed").value === "1", on: true});
+    renderDetail();
+  };
+  document.querySelectorAll("[data-delf]").forEach(b => b.onclick = () => { c.findings.splice(+b.dataset.delf, 1); renderDetail(); });
+  document.querySelectorAll("[data-deli]").forEach(b => b.onclick = () => { c.items.splice(+b.dataset.deli, 1); renderDetail(); });
+}
+function detailAction(c){
+  if (c.status === "listo") return `<button class="btn" id="ready">Volver a avisar por WhatsApp</button>`;
+  if (c.status === "reparacion") return `<button class="btn main" id="ready">Terminado · avisar por WhatsApp</button>`;
+  if (c.status === "esperando") return `<button class="btn" id="send">Reenviar</button><button class="btn main" id="answer" style="flex:2">Registrar respuesta del cliente</button>`;
+  return `<button class="btn main" id="send" ${c.findings.length && c.items.length ? "" : "disabled"}>Enviar presupuesto por WhatsApp</button>`;
+}
+function bindAction(c){
+  const b = id => document.getElementById(id);
+  if (b("send")) b("send").onclick = () => waSheet("Presupuesto para el cliente", `Así le llega a ${esc(c.client)}:`, budgetMsg(c), () => {
+    const now = new Date();
+    c.sentAt = now.toLocaleDateString("es-ES",{day:"numeric",month:"short"}) + ", " + now.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});
+    c.status = "esperando"; renderDetail(); toast("Presupuesto enviado. Esperando respuesta del cliente.");
+  });
+  if (b("answer")) b("answer").onclick = () => answerSheet(c);
+  if (b("ready")) b("ready").onclick = () => waSheet("Aviso de coche listo", `Así le llega a ${esc(c.client)}:`, readyMsg(c), () => {
+    c.status = "listo"; flashId = c.id; go("board"); toast("Cliente avisado por WhatsApp");
+  });
+}
+function answerSheet(c){
+  sheet(`<h3>¿Qué ha aprobado el cliente?</h3>
+    <p class="muted" style="font-size:14px;margin:0 0 6px">Se guarda con fecha y hora en la orden.</p>
+    ${c.items.map((it,i) => `<div class="item"><div class="txt"><b>${esc(it.name)}</b><small>${eur(it.price)} + IVA</small></div>
+      <label class="sw"><input type="checkbox" data-i="${i}" checked aria-label="Aprobada ${esc(it.name)}"><i></i></label></div>`).join("")}
+    <label class="f" for="via">Cómo lo ha dicho</label>
+    <select id="via"><option>Por WhatsApp</option><option>Por teléfono</option><option>En persona</option></select>
+    <div class="r"><button class="btn" id="cancel">Volver</button><button class="btn main" id="confirm">Guardar</button></div>`);
+  $("#cancel").onclick = closeSheet;
+  $("#confirm").onclick = () => {
+    document.querySelectorAll("#sheetBody [data-i]").forEach(x => c.items[x.dataset.i].on = x.checked);
+    if (!c.items.some(i => i.on)) return toast("Marca al menos una partida, o deja el coche como está");
+    const now = new Date();
+    c.approval = {
+      when: now.toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"}) + ", " + now.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
+      via: $("#via").value,
+      yes: c.items.filter(i => i.on).map(i => i.name).join(", "),
+      no: c.items.filter(i => !i.on).map(i => i.name).join(", ") || "Ninguna",
+      total: eur(totals(c).total)
+    };
+    c.status = "reparacion"; closeSheet(); renderDetail(); toast("Aprobación guardada");
+  };
+}
+
+render();
+</script>
+</body>
+</html>
